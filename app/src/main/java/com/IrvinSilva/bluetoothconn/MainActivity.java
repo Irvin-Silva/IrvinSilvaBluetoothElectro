@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static ConnectedThread connectedThread;
     public static CreateConnectThread createConnectThread;
 
-    private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
+    private final static int CONNECTING_STATUS = 1; // used hhandler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
 
     @Override
