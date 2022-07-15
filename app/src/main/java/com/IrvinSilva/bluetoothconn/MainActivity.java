@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static Handler handler2;
     public static BluetoothSocket mmSocket;
     public static ConnectedThread connectedThread;
+    public static ConnectedThread connectedThread2;
     public static CreateConnectThread createConnectThread;
 
     private final static int CONNECTING_STATUS = 1; // used handler to identify message status
@@ -199,8 +200,10 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+////////////////////////////////////////////////////////////////////////////////7///
 
-        // Select Bluetooth Device ASPERSION
+
+        // Select Bluetooth Device
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,8 +212,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // Button to ON/OFF LED on Arduino Board
+        // Button to ON/OFF LED on Arduino ASPERSIÓN
         buttonToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
                         buttonToggle2.setText("Apagar Goteo");
                         // Command to turn on LED on Arduino. Must match with the command in Arduino code
-                        cmdText2 = "<apagar goteo>";
+                        cmdText2 = "<Encendido2>";
                         break;
                     case "apagar goteo":
                         buttonToggle2.setText("Encender Goteo");
@@ -259,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Send command to Arduino board
-                connectedThread.write(cmdText2);
+                connectedThread2.write(cmdText2);
             }
         });
     }
