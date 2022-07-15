@@ -25,6 +25,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -34,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
     private String deviceName = null;
     private String deviceAddress;
     public static Handler handler;
+    public static Handler handler2;
     public static BluetoothSocket mmSocket;
     public static ConnectedThread connectedThread;
     public static CreateConnectThread createConnectThread;
 
     private final static int CONNECTING_STATUS = 1; // used handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +57,16 @@ public class MainActivity extends AppCompatActivity {
         final ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         final TextView textViewInfo = findViewById(R.id.textViewInfo);
+        final TextView textViewInfo2 =findViewById(R.id.textViewInfo2);
         final Button buttonToggle = findViewById(R.id.buttonToggle);
+        final Button buttonToggle2 = findViewById(R.id.buttonToggle2);
         buttonToggle.setEnabled(false);
+        buttonToggle2.setEnabled(false);
         final ImageView imageView = findViewById(R.id.imageView);
+        final ImageView imageView2 = findViewById(R.id.imageView2);
         imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
+        imageView2.setBackgroundColor(getResources().getColor(R.color.colorOff2));
+
 
 
 
@@ -132,17 +142,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        handler = new Handler(Looper.getMainLooper()) {
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+        handler2 = new Handler(Looper.getMainLooper()) {
             @Override
-            public void handleMessage(Message msg){
-                switch (msg.what){
+            public void handleMessage(Message msg2){
+                switch (msg2.what){
                     case CONNECTING_STATUS:
-                        switch(msg.arg1){
+                        switch(msg2.arg1){
                             case 1:
                                 toolbar.setSubtitle("Conectado a:  " + deviceName);
                                 progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
-                                buttonToggle.setEnabled(true);
+                                buttonToggle2.setEnabled(true);
                                 break;
                             case -1:
                                 toolbar.setSubtitle("El dispositivo falló al conectar");
@@ -153,7 +171,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case MESSAGE_READ:
-                        String arduinoMsg = msg.obj.toString();
+                        String arduinoMsg2 = msg2.obj.toString();
+
+
 
 
 
@@ -164,14 +184,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                        switch (arduinoMsg.toLowerCase()){
-                            case "aspersion encendida":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOn));
-                                textViewInfo.setText("Mensaje Arduino : " + arduinoMsg);
+                        switch (arduinoMsg2.toLowerCase()){
+                            case "goteo encendido":
+                                imageView2.setBackgroundColor(getResources().getColor(R.color.colorOn2));
+                                textViewInfo2.setText("Mensaje Arduino : " + arduinoMsg2);
                                 break;
-                            case "aspersion apagada":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
-                                textViewInfo.setText("Mensaje Arduino : " + arduinoMsg);
+                            case "goteo apagado":
+                                imageView2.setBackgroundColor(getResources().getColor(R.color.colorOff2));
+                                textViewInfo2.setText("Mensaje Arduino : " + arduinoMsg2);
                                 break;
                         }
                         break;
@@ -179,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        // Select Bluetooth Device
+
+        // Select Bluetooth Device ASPERSION
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,32 +214,52 @@ public class MainActivity extends AppCompatActivity {
         buttonToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
-                notificacion.setSmallIcon(R.mipmap.ic_launcher);
-                notificacion.setTicker("Nueva Notificación");
-                notificacion.setWhen(System.currentTimeMillis());
-                notificacion.setContentTitle("EL LED ESTÁ ENCENDIDO");
-                notificacion.setContentText("LED ENCENDIDO");
-                NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                */
-
                 String cmdText = null;
                 String btnState = buttonToggle.getText().toString().toLowerCase();
                 switch (btnState){
-                    case "turn on":
+                    case "encender aspersión":
 
-                        buttonToggle.setText("Turn Off");
+                        buttonToggle.setText("Apagar Aspersión");
                         // Command to turn on LED on Arduino. Must match with the command in Arduino code
                         cmdText = "<Encendido>";
                         break;
-                    case "turn off":
-                        buttonToggle.setText("Turn On");
+                    case "apagar aspersión":
+                        buttonToggle.setText("Encender Aspersión");
                         // Command to turn off LED on Arduino. Must match with the command in Arduino code
                         cmdText = "<Apagado>";
                         break;
                 }
+
                 // Send command to Arduino board
                 connectedThread.write(cmdText);
+            }
+        });
+
+
+
+
+        // Button to ON/OFF LED on Arduino Board GOTEO
+        buttonToggle2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String cmdText2 = null;
+                String btnState2 = buttonToggle2.getText().toString().toLowerCase();
+                switch (btnState2){
+                    case "encender goteo":
+
+                        buttonToggle2.setText("Apagar Goteo");
+                        // Command to turn on LED on Arduino. Must match with the command in Arduino code
+                        cmdText2 = "<apagar goteo>";
+                        break;
+                    case "apagar goteo":
+                        buttonToggle2.setText("Encender Goteo");
+                        // Command to turn off LED on Arduino. Must match with the command in Arduino code
+                        cmdText2 = "<Apagado2>";
+                        break;
+                }
+
+                // Send command to Arduino board
+                connectedThread.write(cmdText2);
             }
         });
     }
@@ -260,12 +301,14 @@ public class MainActivity extends AppCompatActivity {
                 mmSocket.connect();
                 Log.e("Status", "Device connected");
                 handler.obtainMessage(CONNECTING_STATUS, 1, -1).sendToTarget();
+                handler2.obtainMessage(CONNECTING_STATUS,1,-1).sendToTarget();
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
                 try {
                     mmSocket.close();
                     Log.e("Status", "Cannot connect to device");
                     handler.obtainMessage(CONNECTING_STATUS, -1, -1).sendToTarget();
+                    handler2.obtainMessage(CONNECTING_STATUS,-1,-1).sendToTarget();
                 } catch (IOException closeException) {
                     Log.e(TAG, "Could not close the client socket", closeException);
                 }
@@ -326,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
                         readMessage = new String(buffer,0,bytes);
                         Log.e("Arduino Message",readMessage);
                         handler.obtainMessage(MESSAGE_READ,readMessage).sendToTarget();
+                        handler2.obtainMessage(MESSAGE_READ,readMessage).sendToTarget();
                         bytes = 0;
                     } else {
                         bytes++;
